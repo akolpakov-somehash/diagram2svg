@@ -1,6 +1,6 @@
 # diagrams
 
-Small diagram-as-code CLI for generating SVG diagrams with `roughjs` + `jsdom`.
+Small diagram-as-code CLI for generating SVG diagrams with `perfect-freehand` + `jsdom`.
 
 ## Requirements
 
@@ -33,16 +33,10 @@ Render a diagram to `out/<name>.svg`:
 npm run convert -- empty-rect
 ```
 
-Render another diagram:
-
-```bash
-npm run convert -- median-partition
-```
-
 Print SVG to stdout:
 
 ```bash
-npm run convert -- median-partition --stdout
+npm run convert -- empty-rect --stdout
 ```
 
 Set a custom output directory:

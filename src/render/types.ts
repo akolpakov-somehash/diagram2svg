@@ -1,13 +1,16 @@
 import type { Theme } from "./theme";
 
-export type ShapeStyle = Partial<
-  Pick<Theme, "stroke" | "strokeWidth" | "roughness" | "bowing" | "fill">
->;
+export interface ShapeStyle
+  extends Partial<Pick<Theme, "stroke" | "strokeWidth" | "roughness" | "bowing" | "fill">> {
+  opacity?: number;
+}
 
 export interface TextStyle {
   fill?: string;
   fontFamily?: string;
   fontSize?: number;
+  fontWeight?: string | number;
+  anchor?: "start" | "middle" | "end";
   textAnchor?: "start" | "middle" | "end";
   dominantBaseline?:
     | "auto"

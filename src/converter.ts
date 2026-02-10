@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { Command } from "commander";
 import { getDiagram, listDiagrams } from "./diagrams";
-import { renderDiagramToSvg } from "./render/roughSvgRenderer";
+import { renderDiagramToSvg } from "./render/freehandSvgRenderer";
 
 interface CliOptions {
   outDir: string;
