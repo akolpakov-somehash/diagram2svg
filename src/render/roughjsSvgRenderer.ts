@@ -27,25 +27,36 @@ function createDrawingContext(
   offsetY: number
 ): DrawingContext {
   const svgNs = "http://www.w3.org/2000/svg";
+  const document = svg.ownerDocument;
 
   return {
     rect(x, y, width, height, opts) {
       const node = rc.rectangle(x + offsetX, y + offsetY, width, height, toRoughOptions(theme, opts));
+      if (typeof opts?.opacity === "number") {
+        node.setAttribute("opacity", String(Math.max(0, Math.min(1, opts.opacity / 100))));
+      }
       svg.appendChild(node);
     },
     line(x1, y1, x2, y2, opts) {
       const node = rc.line(x1 + offsetX, y1 + offsetY, x2 + offsetX, y2 + offsetY, toRoughOptions(theme, opts));
+      if (typeof opts?.opacity === "number") {
+        node.setAttribute("opacity", String(Math.max(0, Math.min(1, opts.opacity / 100))));
+      }
       svg.appendChild(node);
     },
     text(x, y, content, opts) {
-      const text = svg.ownerDocument.createElementNS(svgNs, "text");
+      const text = document.createElementNS(svgNs, "text");
       text.setAttribute("x", String(x + offsetX));
       text.setAttribute("y", String(y + offsetY));
       text.setAttribute("fill", opts?.fill ?? theme.stroke);
       text.setAttribute("font-family", opts?.fontFamily ?? theme.fontFamily);
       text.setAttribute("font-size", String(opts?.fontSize ?? theme.fontSize));
-      if (opts?.textAnchor) {
-        text.setAttribute("text-anchor", opts.textAnchor);
+      if (opts?.fontWeight) {
+        text.setAttribute("font-weight", String(opts.fontWeight));
+      }
+      const textAnchor = opts?.textAnchor ?? opts?.anchor;
+      if (textAnchor) {
+        text.setAttribute("text-anchor", textAnchor);
       }
       if (opts?.dominantBaseline) {
         text.setAttribute("dominant-baseline", opts.dominantBaseline);
