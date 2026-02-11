@@ -10,35 +10,43 @@ export const arrayRectDiagram: Diagram = {
   }
 };
 
-const defaultHeight = 400;
-const defaultCellWidth = 80;
-const withPadding = 160;
-const defaultX = 80;
-const defaultY = 80;
+const DEFAULTS = {
+  cellWidth: 80,
+  widthPadding: 160,
+  heightPadding: 160,
+  x: 80,
+  y: 80,
+} as const;
 
-export function drawArray(numCels: number, cellWidth: number = defaultCellWidth): Diagram {
+function getRandomIntBetween(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function drawArray(numCels: number, cellWidth: number = DEFAULTS.cellWidth): Diagram {
   return {
     name: `array-${numCels}`,
-    width: cellWidth * numCels + withPadding,
-    height: defaultHeight,
+    width: cellWidth * numCels + DEFAULTS.widthPadding,
+    height: cellWidth + DEFAULTS.heightPadding,
     draw(ctx) {
-      ctx.rect(defaultX, defaultY, cellWidth * numCels, cellWidth, { fill: "transparent" });
+      ctx.rect(DEFAULTS.x, DEFAULTS.y, cellWidth * numCels, cellWidth, { fill: "transparent" });
       for (let i = 1; i < numCels; i++) {
-        ctx.line(defaultX + cellWidth * i, defaultY, defaultX + cellWidth * i, cellWidth + defaultY);
+        let randUp = getRandomIntBetween(10, 20);
+        let randBottom = getRandomIntBetween(10, 20);
+        ctx.line(DEFAULTS.x + cellWidth * i, DEFAULTS.y - randUp, DEFAULTS.x + cellWidth * i, cellWidth + DEFAULTS.y + randBottom);
       }
     }
   };
 }
 
-export function drawArrayWithValues(values: string[], cellWidth: number = defaultCellWidth): Diagram {
+export function drawArrayWithValues(values: string[], cellWidth: number = DEFAULTS.cellWidth): Diagram {
   return {
     name: `array-${values.length}`,
     width: cellWidth * values.length + 160,
     height: 400,
     draw(ctx) {
-      ctx.rect(80, 80, cellWidth * values.length, cellWidth, { fill: "transparent" });
+      ctx.rect(DEFAULTS.x, DEFAULTS.y, cellWidth * values.length, cellWidth, { fill: "transparent" });
       for (let i = 1; i < values.length; i++) {
-        ctx.line(80 + cellWidth * i, 80, 80 + cellWidth * i, cellWidth + 80);
+        ctx.line(DEFAULTS.x + cellWidth * i, DEFAULTS.y, DEFAULTS.x + cellWidth * i, cellWidth + DEFAULTS.y);
       }
       // for (let i = 0; i < values.length; i++) {
       //   ctx.text(values[i], 80 + cellWidth * i + cellWidth / 2, 80 + cellWidth / 2);
