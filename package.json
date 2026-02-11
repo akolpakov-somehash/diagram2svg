@@ -5,6 +5,7 @@
   "description": "Small diagram-as-code CLI using perfect-freehand or roughjs + jsdom",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "watch": "tsc -p tsconfig.json --watch",
     "convert": "node dist/converter.js"
   },
   "dependencies": {
