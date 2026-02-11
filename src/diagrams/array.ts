@@ -46,13 +46,21 @@ export function drawArrayWithValues(values: string[], cellWidth: number = DEFAUL
     draw(ctx) {
       ctx.rect(DEFAULTS.x, DEFAULTS.y, cellWidth * values.length, cellWidth, { fill: "transparent" });
       for (let i = 1; i < values.length; i++) {
-        ctx.line(DEFAULTS.x + cellWidth * i, DEFAULTS.y, DEFAULTS.x + cellWidth * i, cellWidth + DEFAULTS.y);
+        let randUp = getRandomIntBetween(10, 20);
+        let randBottom = getRandomIntBetween(10, 20);
+        ctx.line(DEFAULTS.x + cellWidth * i, DEFAULTS.y - randUp, DEFAULTS.x + cellWidth * i, cellWidth + DEFAULTS.y + randBottom);
       }
-      // for (let i = 0; i < values.length; i++) {
-      //   ctx.text(values[i], 80 + cellWidth * i + cellWidth / 2, 80 + cellWidth / 2);
-      // }
+      for (let i = 0; i < values.length; i++) {
+        ctx.text(
+          DEFAULTS.x + cellWidth * i + cellWidth / 2,
+          DEFAULTS.y + cellWidth / 2,
+          values[i],
+          { textAnchor: "middle", dominantBaseline: "middle" }
+        );
+      }
     }
   };
 }
 
 export const arr10Diagram = drawArray(10);
+export const arrTxtDiagram = drawArrayWithValues(["a", "b", "c"]);
