@@ -1,6 +1,6 @@
 # diagrams
 
-Small diagram-as-code CLI for generating SVG diagrams with `perfect-freehand` + `jsdom`.
+Small diagram-as-code CLI for generating SVG diagrams with `roughjs` (default) or `perfect-freehand` + `jsdom`.
 
 ## Requirements
 
@@ -45,11 +45,18 @@ Set a custom output directory:
 npm run convert -- empty-rect --outDir ./artifacts
 ```
 
+Render with `perfect-freehand` instead of the default renderer:
+
+```bash
+npm run convert -- empty-rect --renderer perfect-freehand
+```
+
 ## CLI options
 
 - `--list` - list available diagrams
 - `--stdout` - print SVG to stdout instead of writing a file
 - `--outDir <dir>` - output directory (default: `out`)
+- `--renderer <name>` - renderer backend: `roughjs` (default) or `perfect-freehand`
 
 ## Project structure
 
