@@ -48,9 +48,9 @@ export function drawArrayWithValues(values: string[], cellWidth: number = DEFAUL
       for (let i = 1; i < values.length; i++) {
         let randUp = getRandomIntBetween(10, 20);
         let randBottom = getRandomIntBetween(10, 20);
-        ctx.line(DEFAULTS.x + cellWidth * i, DEFAULTS.y - randUp, DEFAULTS.x + cellWidth * i, cellWidth + DEFAULTS.y + randBottom);
-      }
-      for (let i = 0; i < values.length; i++) {
+        if (i > 0){
+            ctx.line(DEFAULTS.x + cellWidth * i, DEFAULTS.y - randUp, DEFAULTS.x + cellWidth * i, cellWidth + DEFAULTS.y + randBottom);
+        }
         ctx.text(
           DEFAULTS.x + cellWidth * i + cellWidth / 2,
           DEFAULTS.y + cellWidth / 2,
@@ -62,5 +62,33 @@ export function drawArrayWithValues(values: string[], cellWidth: number = DEFAUL
   };
 }
 
+export function drawArrayWithFilledCells(values: string[], filled: number[], cellWidth: number = DEFAULTS.cellWidth, color: string = "red", style: string = "zigzag"): Diagram {
+  return {
+    name: `array-${values.length}`,
+    width: cellWidth * values.length + 160,
+    height: 400,
+    draw(ctx) {
+      ctx.rect(DEFAULTS.x, DEFAULTS.y, cellWidth * values.length, cellWidth, { fill: "transparent" });
+      for (let i = 0; i < values.length; i++) {
+        let randUp = getRandomIntBetween(10, 20);
+        let randBottom = getRandomIntBetween(10, 20);
+        if (i > 0){
+            ctx.line(DEFAULTS.x + cellWidth * i, DEFAULTS.y - randUp, DEFAULTS.x + cellWidth * i, cellWidth + DEFAULTS.y + randBottom);
+        }
+        if (filled.indexOf(i) > -1) {
+            ctx.rect(DEFAULTS.x+cellWidth*i, DEFAULTS.y, cellWidth, cellWidth, {stroke:"none", fill: color, fillStyle: style})
+        }
+        ctx.text(
+          DEFAULTS.x + cellWidth * i + cellWidth / 2,
+          DEFAULTS.y + cellWidth / 2,
+          values[i],
+          { textAnchor: "middle", dominantBaseline: "middle" }
+        );
+      }
+    }
+  };
+}
+
+export const arrFilled = drawArrayWithFilledCells(["a","b", "c"], [1])
 export const arr10Diagram = drawArray(10);
 export const arrTxtDiagram = drawArrayWithValues(["a", "b", "c"]);

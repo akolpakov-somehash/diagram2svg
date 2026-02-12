@@ -4,6 +4,7 @@ export interface Theme {
   roughness: number;
   bowing: number;
   fill: string;
+  fillStyle: string;
   fontFamily: string;
   fontSize: number;
 }
@@ -14,6 +15,7 @@ export const DEFAULT_THEME: Theme = {
   roughness: 1.8,
   bowing: 1.2,
   fill: "transparent",
+  fillStyle: "hachure",
   fontFamily: 'Virgil, "Comic Sans MS", system-ui, sans-serif',
   fontSize: 64
 };

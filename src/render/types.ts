@@ -1,7 +1,7 @@
 import type { Theme } from "./theme";
 
 export interface ShapeStyle
-  extends Partial<Pick<Theme, "stroke" | "strokeWidth" | "roughness" | "bowing" | "fill">> {
+  extends Partial<Pick<Theme, "stroke" | "strokeWidth" | "roughness" | "bowing" | "fill" | "fillStyle">> {
   opacity?: number;
 }
 
