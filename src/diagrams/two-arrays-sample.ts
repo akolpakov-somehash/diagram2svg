@@ -1,13 +1,5 @@
-import type { Diagram, DrawingContext } from "../render/types";
+import type { Diagram } from "../render/types";
 import { drawArrayWithValues } from "./array";
-
-function offsetCtx(ctx: DrawingContext, dx: number, dy: number): DrawingContext {
-  return {
-    rect: (x, y, width, height, opts) => ctx.rect(x + dx, y + dy, width, height, opts),
-    line: (x1, y1, x2, y2, opts) => ctx.line(x1 + dx, y1 + dy, x2 + dx, y2 + dy, opts),
-    text: (x, y, content, opts) => ctx.text(x + dx, y + dy, content, opts)
-  };
-}
 
 const LAYOUT = {
   plus: {
@@ -43,6 +35,11 @@ export const twoArraysSampleDiagram: Diagram = {
   draw(ctx) {
     first.draw(ctx);
     plus.draw(ctx);
-    second.draw(offsetCtx(ctx, first.width - LAYOUT.rightArrayXShift, 0));
+    const dx = first.width - LAYOUT.rightArrayXShift;
+    second.draw({
+      rect: (x, y, width, height, opts) => ctx.rect(x + dx, y, width, height, opts),
+      line: (x1, y1, x2, y2, opts) => ctx.line(x1 + dx, y1, x2 + dx, y2, opts),
+      text: (x, y, content, opts) => ctx.text(x + dx, y, content, opts)
+    });
   }
 };
