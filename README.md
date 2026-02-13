@@ -1,6 +1,6 @@
 # diagrams
 
-Small diagram-as-code CLI for generating SVG diagrams with `roughjs` (default) or `perfect-freehand` + `jsdom`.
+Small diagram-as-code CLI for generating SVG diagrams with `roughjs` (default), `clean-svg`, or `perfect-freehand` + `jsdom`.
 
 ## Requirements
 
@@ -57,7 +57,13 @@ Render with `perfect-freehand` instead of the default renderer:
 npm run convert -- empty-rect --renderer perfect-freehand
 ```
 
-Render with the synthwave theme:
+Render with clean geometry:
+
+```bash
+npm run convert -- empty-rect --renderer clean-svg
+```
+
+Render with the synthwave theme (includes neon glow filters):
 
 ```bash
 npm run convert -- empty-rect --theme synthwave
@@ -69,7 +75,7 @@ npm run convert -- empty-rect --theme synthwave
 - `--stdout` - print SVG to stdout instead of writing a file
 - `--png` - export PNG instead of SVG
 - `--outDir <dir>` - output directory (default: `out`)
-- `--renderer <name>` - renderer backend: `roughjs` (default) or `perfect-freehand`
+- `--renderer <name>` - renderer backend: `roughjs` (default), `clean-svg`, or `perfect-freehand`
 - `--theme <name>` - theme preset: `classic` (default) or `synthwave`
 
 ## PNG conversion notes

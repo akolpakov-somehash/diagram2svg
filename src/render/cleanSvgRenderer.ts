@@ -1,9 +1,7 @@
 import { JSDOM } from "jsdom";
-import rough from "roughjs";
-import type { Options as RoughOptions } from "roughjs/bin/core";
 import { applyGlowFilter, ensureGlowFilter } from "./glowFilter";
 import { DEFAULT_THEME, type Theme } from "./theme";
-import type { Diagram, DrawingContext, ShapeStyle } from "./types";
+import type { Diagram, DrawingContext } from "./types";
 
 export interface RenderOptions {
   padding?: number;
@@ -11,21 +9,21 @@ export interface RenderOptions {
   theme?: Theme;
 }
 
-function toRoughOptions(theme: Theme, style?: ShapeStyle): RoughOptions {
-  return {
-    stroke: style?.stroke ?? theme.stroke,
-    strokeWidth: style?.strokeWidth ?? theme.strokeWidth,
-    roughness: style?.roughness ?? theme.roughness,
-    bowing: style?.bowing ?? theme.bowing,
-    fill: style?.fill ?? theme.fill,
-    fillStyle: style?.fillStyle ?? theme.fillStyle
-  };
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
+function toOpacityValue(opacity: number | undefined): string | null {
+  if (typeof opacity !== "number") {
+    return null;
+  }
+
+  return String(clamp(opacity / 100, 0, 1));
 }
 
 function createDrawingContext(
   svg: SVGSVGElement,
   shapeLayer: SVGGElement,
-  rc: ReturnType<typeof rough.svg>,
   theme: Theme,
   offsetX: number,
   offsetY: number
@@ -35,18 +33,33 @@ function createDrawingContext(
 
   return {
     rect(x, y, width, height, opts) {
-      const node = rc.rectangle(x + offsetX, y + offsetY, width, height, toRoughOptions(theme, opts));
-      if (typeof opts?.opacity === "number") {
-        node.setAttribute("opacity", String(Math.max(0, Math.min(1, opts.opacity / 100))));
+      const rect = document.createElementNS(svgNs, "rect");
+      rect.setAttribute("x", String(x + offsetX));
+      rect.setAttribute("y", String(y + offsetY));
+      rect.setAttribute("width", String(width));
+      rect.setAttribute("height", String(height));
+      rect.setAttribute("stroke", opts?.stroke ?? theme.stroke);
+      rect.setAttribute("stroke-width", String(opts?.strokeWidth ?? theme.strokeWidth));
+      rect.setAttribute("fill", opts?.fill ?? theme.fill);
+      const opacity = toOpacityValue(opts?.opacity);
+      if (opacity) {
+        rect.setAttribute("opacity", opacity);
       }
-      shapeLayer.appendChild(node);
+      shapeLayer.appendChild(rect);
     },
     line(x1, y1, x2, y2, opts) {
-      const node = rc.line(x1 + offsetX, y1 + offsetY, x2 + offsetX, y2 + offsetY, toRoughOptions(theme, opts));
-      if (typeof opts?.opacity === "number") {
-        node.setAttribute("opacity", String(Math.max(0, Math.min(1, opts.opacity / 100))));
+      const line = document.createElementNS(svgNs, "line");
+      line.setAttribute("x1", String(x1 + offsetX));
+      line.setAttribute("y1", String(y1 + offsetY));
+      line.setAttribute("x2", String(x2 + offsetX));
+      line.setAttribute("y2", String(y2 + offsetY));
+      line.setAttribute("stroke", opts?.stroke ?? theme.stroke);
+      line.setAttribute("stroke-width", String(opts?.strokeWidth ?? theme.strokeWidth));
+      const opacity = toOpacityValue(opts?.opacity);
+      if (opacity) {
+        line.setAttribute("opacity", opacity);
       }
-      shapeLayer.appendChild(node);
+      shapeLayer.appendChild(line);
     },
     text(x, y, content, opts) {
       const text = document.createElementNS(svgNs, "text");
@@ -86,6 +99,7 @@ export function renderDiagramToSvg(diagram: Diagram, options: RenderOptions = {}
   svg.setAttribute("width", String(width));
   svg.setAttribute("height", String(height));
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svg.setAttribute("shape-rendering", "geometricPrecision");
 
   if (background) {
     const bg = document.createElementNS(svgNs, "rect");
@@ -97,13 +111,12 @@ export function renderDiagramToSvg(diagram: Diagram, options: RenderOptions = {}
     svg.appendChild(bg);
   }
 
-  const rc = rough.svg(svg);
   const glowFilterId = ensureGlowFilter(svg, theme);
   const shapeLayer = document.createElementNS(svgNs, "g") as SVGGElement;
   applyGlowFilter(shapeLayer, glowFilterId);
   svg.appendChild(shapeLayer);
 
-  const ctx = createDrawingContext(svg, shapeLayer, rc, theme, padding, padding);
+  const ctx = createDrawingContext(svg, shapeLayer, theme, padding, padding);
   diagram.draw(ctx);
 
   const serialized = new dom.window.XMLSerializer().serializeToString(svg);

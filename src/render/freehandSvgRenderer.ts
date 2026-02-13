@@ -1,5 +1,6 @@
 import { JSDOM } from "jsdom";
 import { getStroke } from "perfect-freehand";
+import { applyGlowFilter, ensureGlowFilter } from "./glowFilter";
 import { DEFAULT_THEME, type Theme } from "./theme";
 import type { Diagram, DrawingContext, ShapeStyle } from "./types";
 
@@ -121,6 +122,7 @@ function createStrokePath(points: Point[], style: ResolvedShapeStyle): string {
 
 function createDrawingContext(
   svg: SVGSVGElement,
+  shapeLayer: SVGGElement,
   theme: Theme,
   offsetX: number,
   offsetY: number
@@ -140,7 +142,7 @@ function createDrawingContext(
     if (typeof style.opacity === "number") {
       path.setAttribute("opacity", String(clamp(style.opacity / 100, 0, 1)));
     }
-    svg.appendChild(path);
+    shapeLayer.appendChild(path);
   }
 
   return {
@@ -161,7 +163,7 @@ function createDrawingContext(
         if (typeof resolved.opacity === "number") {
           fillRect.setAttribute("opacity", String(clamp(resolved.opacity / 100, 0, 1)));
         }
-        svg.appendChild(fillRect);
+        shapeLayer.appendChild(fillRect);
       }
 
       appendStrokePath(segmentPoints(left, top, right, top, resolved.roughness, resolved.bowing, left + top), resolved);
@@ -235,7 +237,12 @@ export function renderDiagramToSvg(diagram: Diagram, options: RenderOptions = {}
     svg.appendChild(bg);
   }
 
-  const ctx = createDrawingContext(svg, theme, padding, padding);
+  const glowFilterId = ensureGlowFilter(svg, theme);
+  const shapeLayer = document.createElementNS(svgNs, "g") as SVGGElement;
+  applyGlowFilter(shapeLayer, glowFilterId);
+  svg.appendChild(shapeLayer);
+
+  const ctx = createDrawingContext(svg, shapeLayer, theme, padding, padding);
   diagram.draw(ctx);
 
   const serialized = new dom.window.XMLSerializer().serializeToString(svg);

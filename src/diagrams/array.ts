@@ -19,7 +19,8 @@ const DEFAULTS = {
 } as const;
 
 function getRandomIntBetween(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+//  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return 0;
 }
 
 export function drawArray(numCels: number, cellWidth: number = DEFAULTS.cellWidth): Diagram {

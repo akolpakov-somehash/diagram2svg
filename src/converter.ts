@@ -2,10 +2,11 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { Command } from "commander";
 import { getDiagram, listDiagrams } from "./diagrams";
+import { renderDiagramToSvg as renderWithCleanSvg } from "./render/cleanSvgRenderer";
 import { renderDiagramToSvg as renderWithFreehand } from "./render/freehandSvgRenderer";
 import { exportSvgToPng } from "./render/pngExporter";
 import { renderDiagramToSvg as renderWithRoughjs } from "./render/roughjsSvgRenderer";
-import { DEFAULT_THEME_NAME, getThemeByName, parseThemeName, THEME_NAMES, type ThemeName } from "./render/theme";
+import { DEFAULT_THEME_NAME, getThemeByName, parseThemeName, THEME_NAMES, type Theme, type ThemeName } from "./render/theme";
 
 interface CliOptions {
   outDir: string;
@@ -16,22 +17,24 @@ interface CliOptions {
   theme: string;
 }
 
-const SUPPORTED_RENDERERS = ["perfect-freehand", "roughjs"] as const;
+const SUPPORTED_RENDERERS = ["perfect-freehand", "roughjs", "clean-svg"] as const;
 type RendererName = (typeof SUPPORTED_RENDERERS)[number];
 
 function parseRenderer(value: string): RendererName | null {
   return (SUPPORTED_RENDERERS as readonly string[]).includes(value) ? (value as RendererName) : null;
 }
 
-function renderByRenderer(renderer: RendererName, diagram: ReturnType<typeof getDiagram>, themeName: ThemeName): string {
+function renderByRenderer(renderer: RendererName, diagram: ReturnType<typeof getDiagram>, theme: Theme): string {
   if (!diagram) {
     throw new Error("Diagram is required.");
   }
 
-  const theme = getThemeByName(themeName);
-
   if (renderer === "roughjs") {
     return renderWithRoughjs(diagram, { theme });
+  }
+
+  if (renderer === "clean-svg") {
+    return renderWithCleanSvg(diagram, { theme });
   }
 
   return renderWithFreehand(diagram, { theme });
@@ -64,18 +67,19 @@ async function run(diagramName: string | undefined, options: CliOptions): Promis
     return 1;
   }
 
-  const theme = parseThemeName(options.theme);
-  if (!theme) {
+  const themeName = parseThemeName(options.theme);
+  if (!themeName) {
     process.stderr.write(`Unknown theme "${options.theme}". Allowed values: ${THEME_NAMES.join(", ")}.\n`);
     return 1;
   }
 
+  const theme = getThemeByName(themeName);
   const svg = renderByRenderer(renderer, diagram, theme);
   const outputExtension = options.png ? "png" : "svg";
 
   if (options.stdout) {
     if (options.png) {
-      const png = await exportSvgToPng(svg);
+      const png = await exportSvgToPng(svg, { defaultFontFamily: theme.fontFamily });
       process.stdout.write(png);
       return 0;
     }
@@ -88,7 +92,7 @@ async function run(diagramName: string | undefined, options: CliOptions): Promis
   const outputPath = path.join(options.outDir, `${diagramName}.${outputExtension}`);
 
   if (options.png) {
-    const png = await exportSvgToPng(svg);
+    const png = await exportSvgToPng(svg, { defaultFontFamily: theme.fontFamily });
     await fs.writeFile(outputPath, png);
   } else {
     await fs.writeFile(outputPath, svg, "utf8");

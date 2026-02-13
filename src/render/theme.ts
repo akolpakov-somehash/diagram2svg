@@ -1,3 +1,12 @@
+export interface ThemeGlow {
+  filterId: string;
+  stdDeviation: number;
+  x: string;
+  y: string;
+  width: string;
+  height: string;
+}
+
 export interface Theme {
   stroke: string;
   strokeWidth: number;
@@ -7,6 +16,7 @@ export interface Theme {
   fillStyle: string;
   fontFamily: string;
   fontSize: number;
+  glow?: ThemeGlow;
 }
 
 const CLASSIC_THEME: Theme = {
@@ -27,8 +37,16 @@ const SYNTHWAVE_THEME: Theme = {
   bowing: 0.8,
   fill: "rgba(48, 240, 255, 0.3)",
   fillStyle: "zigzag",
-  fontFamily: '"Orbitron", "Trebuchet MS", sans-serif',
-  fontSize: 64
+  fontFamily: '"Oxanium", "Trebuchet MS", sans-serif',
+  fontSize: 64,
+  glow: {
+    filterId: "synthwave-neon-glow",
+    stdDeviation: 3.2,
+    x: "-45%",
+    y: "-45%",
+    width: "190%",
+    height: "190%"
+  }
 };
 
 export const THEMES = {
