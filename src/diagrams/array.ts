@@ -45,7 +45,7 @@ export function drawArrayWithValues(values: string[], cellWidth: number = DEFAUL
     height: 400,
     draw(ctx) {
       ctx.rect(DEFAULTS.x, DEFAULTS.y, cellWidth * values.length, cellWidth, { fill: "transparent" });
-      for (let i = 1; i < values.length; i++) {
+      for (let i = 0; i < values.length; i++) {
         let randUp = getRandomIntBetween(10, 20);
         let randBottom = getRandomIntBetween(10, 20);
         if (i > 0){
