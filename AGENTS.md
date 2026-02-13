@@ -39,6 +39,8 @@ If you add tests, place them near the related module and wire a project-level `n
 ## Commit & Pull Request Guidelines
 Use concise, imperative commit subjects matching project history (examples: `Add array diagrams...`, `Refine two arrays sample...`).
 
+When the user asks to `commit & push` or to `just commit`, execute it as a single chained shell command (for example with `&&`) rather than separate commands.
+
 For PRs, include:
 - a brief summary of behavior changes,
 - related issue/context,
