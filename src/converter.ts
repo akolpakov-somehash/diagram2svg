@@ -3,12 +3,14 @@ import path from "node:path";
 import { Command } from "commander";
 import { getDiagram, listDiagrams } from "./diagrams";
 import { renderDiagramToSvg as renderWithFreehand } from "./render/freehandSvgRenderer";
+import { exportSvgToPng } from "./render/pngExporter";
 import { renderDiagramToSvg as renderWithRoughjs } from "./render/roughjsSvgRenderer";
 
 interface CliOptions {
   outDir: string;
   stdout?: boolean;
   list?: boolean;
+  png?: boolean;
   renderer: string;
 }
 
@@ -59,15 +61,29 @@ async function run(diagramName: string | undefined, options: CliOptions): Promis
   }
 
   const svg = renderByRenderer(renderer, diagram);
+  const outputExtension = options.png ? "png" : "svg";
 
   if (options.stdout) {
+    if (options.png) {
+      const png = await exportSvgToPng(svg);
+      process.stdout.write(png);
+      return 0;
+    }
+
     process.stdout.write(svg);
     return 0;
   }
 
   await fs.mkdir(options.outDir, { recursive: true });
-  const outputPath = path.join(options.outDir, `${diagramName}.svg`);
-  await fs.writeFile(outputPath, svg, "utf8");
+  const outputPath = path.join(options.outDir, `${diagramName}.${outputExtension}`);
+
+  if (options.png) {
+    const png = await exportSvgToPng(svg);
+    await fs.writeFile(outputPath, png);
+  } else {
+    await fs.writeFile(outputPath, svg, "utf8");
+  }
+
   process.stdout.write(`${outputPath}\n`);
   return 0;
 }
@@ -82,6 +98,7 @@ async function main(): Promise<void> {
     .option("--outDir <dir>", "output directory", "out")
     .option("--stdout", "print SVG to stdout instead of writing a file")
     .option("--list", "list available diagrams")
+    .option("--png", "export PNG instead of SVG")
     .option(
       "--renderer <name>",
       `renderer backend (${SUPPORTED_RENDERERS.join(" | ")})`,

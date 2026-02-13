@@ -33,6 +33,12 @@ Render a diagram to `out/<name>.svg`:
 npm run convert -- empty-rect
 ```
 
+Render a diagram to `out/<name>.png`:
+
+```bash
+npm run convert -- empty-rect --png
+```
+
 Print SVG to stdout:
 
 ```bash
@@ -55,8 +61,13 @@ npm run convert -- empty-rect --renderer perfect-freehand
 
 - `--list` - list available diagrams
 - `--stdout` - print SVG to stdout instead of writing a file
+- `--png` - export PNG instead of SVG
 - `--outDir <dir>` - output directory (default: `out`)
 - `--renderer <name>` - renderer backend: `roughjs` (default) or `perfect-freehand`
+
+## PNG conversion notes
+
+PNG export is rendered with `@resvg/resvg-js` for consistent output across environments.
 
 ## Project structure
 
@@ -64,4 +75,4 @@ npm run convert -- empty-rect --renderer perfect-freehand
 - `src/diagrams/` - diagram definitions
 - `src/render/` - rendering and drawing primitives
 - `dist/` - compiled output (generated)
-- `out/` - generated SVG files (generated)
+- `out/` - generated output files such as SVG/PNG (generated)

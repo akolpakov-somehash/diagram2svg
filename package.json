@@ -9,6 +9,7 @@
     "convert": "node dist/converter.js"
   },
   "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "commander": "^13.1.0",
     "jsdom": "^26.0.0",
     "perfect-freehand": "^1.2.2",
