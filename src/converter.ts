@@ -5,6 +5,7 @@ import { getDiagram, listDiagrams } from "./diagrams";
 import { renderDiagramToSvg as renderWithFreehand } from "./render/freehandSvgRenderer";
 import { exportSvgToPng } from "./render/pngExporter";
 import { renderDiagramToSvg as renderWithRoughjs } from "./render/roughjsSvgRenderer";
+import { DEFAULT_THEME_NAME, getThemeByName, parseThemeName, THEME_NAMES, type ThemeName } from "./render/theme";
 
 interface CliOptions {
   outDir: string;
@@ -12,6 +13,7 @@ interface CliOptions {
   list?: boolean;
   png?: boolean;
   renderer: string;
+  theme: string;
 }
 
 const SUPPORTED_RENDERERS = ["perfect-freehand", "roughjs"] as const;
@@ -21,16 +23,18 @@ function parseRenderer(value: string): RendererName | null {
   return (SUPPORTED_RENDERERS as readonly string[]).includes(value) ? (value as RendererName) : null;
 }
 
-function renderByRenderer(renderer: RendererName, diagram: ReturnType<typeof getDiagram>): string {
+function renderByRenderer(renderer: RendererName, diagram: ReturnType<typeof getDiagram>, themeName: ThemeName): string {
   if (!diagram) {
     throw new Error("Diagram is required.");
   }
 
+  const theme = getThemeByName(themeName);
+
   if (renderer === "roughjs") {
-    return renderWithRoughjs(diagram);
+    return renderWithRoughjs(diagram, { theme });
   }
 
-  return renderWithFreehand(diagram);
+  return renderWithFreehand(diagram, { theme });
 }
 
 async function run(diagramName: string | undefined, options: CliOptions): Promise<number> {
@@ -60,7 +64,13 @@ async function run(diagramName: string | undefined, options: CliOptions): Promis
     return 1;
   }
 
-  const svg = renderByRenderer(renderer, diagram);
+  const theme = parseThemeName(options.theme);
+  if (!theme) {
+    process.stderr.write(`Unknown theme "${options.theme}". Allowed values: ${THEME_NAMES.join(", ")}.\n`);
+    return 1;
+  }
+
+  const svg = renderByRenderer(renderer, diagram, theme);
   const outputExtension = options.png ? "png" : "svg";
 
   if (options.stdout) {
@@ -104,6 +114,7 @@ async function main(): Promise<void> {
       `renderer backend (${SUPPORTED_RENDERERS.join(" | ")})`,
       "roughjs"
     )
+    .option("--theme <name>", `theme preset (${THEME_NAMES.join(" | ")})`, DEFAULT_THEME_NAME)
     .action(async (diagramName: string | undefined, options: CliOptions) => {
       const exitCode = await run(diagramName, options);
       process.exitCode = exitCode;

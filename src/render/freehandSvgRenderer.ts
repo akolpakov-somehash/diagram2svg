@@ -6,6 +6,7 @@ import type { Diagram, DrawingContext, ShapeStyle } from "./types";
 export interface RenderOptions {
   padding?: number;
   background?: string | null;
+  theme?: Theme;
 }
 
 type Point = [number, number];
@@ -211,6 +212,7 @@ function createDrawingContext(
 export function renderDiagramToSvg(diagram: Diagram, options: RenderOptions = {}): string {
   const padding = options.padding ?? 0;
   const background = options.background ?? null;
+  const theme = options.theme ?? DEFAULT_THEME;
   const width = diagram.width + padding * 2;
   const height = diagram.height + padding * 2;
   const svgNs = "http://www.w3.org/2000/svg";
@@ -233,7 +235,7 @@ export function renderDiagramToSvg(diagram: Diagram, options: RenderOptions = {}
     svg.appendChild(bg);
   }
 
-  const ctx = createDrawingContext(svg, DEFAULT_THEME, padding, padding);
+  const ctx = createDrawingContext(svg, theme, padding, padding);
   diagram.draw(ctx);
 
   const serialized = new dom.window.XMLSerializer().serializeToString(svg);

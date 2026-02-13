@@ -57,6 +57,12 @@ Render with `perfect-freehand` instead of the default renderer:
 npm run convert -- empty-rect --renderer perfect-freehand
 ```
 
+Render with the synthwave theme:
+
+```bash
+npm run convert -- empty-rect --theme synthwave
+```
+
 ## CLI options
 
 - `--list` - list available diagrams
@@ -64,6 +70,7 @@ npm run convert -- empty-rect --renderer perfect-freehand
 - `--png` - export PNG instead of SVG
 - `--outDir <dir>` - output directory (default: `out`)
 - `--renderer <name>` - renderer backend: `roughjs` (default) or `perfect-freehand`
+- `--theme <name>` - theme preset: `classic` (default) or `synthwave`
 
 ## PNG conversion notes
 

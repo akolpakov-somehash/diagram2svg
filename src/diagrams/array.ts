@@ -62,7 +62,12 @@ export function drawArrayWithValues(values: string[], cellWidth: number = DEFAUL
   };
 }
 
-export function drawArrayWithFilledCells(values: string[], filled: number[], cellWidth: number = DEFAULTS.cellWidth, color: string = "red", style: string = "zigzag"): Diagram {
+export function drawArrayWithFilledCells(
+  values: string[],
+  filled: number[],
+  cellWidth: number = DEFAULTS.cellWidth,
+  style?: string
+): Diagram {
   return {
     name: `array-${values.length}`,
     width: cellWidth * values.length + 160,
@@ -76,7 +81,10 @@ export function drawArrayWithFilledCells(values: string[], filled: number[], cel
             ctx.line(DEFAULTS.x + cellWidth * i, DEFAULTS.y - randUp, DEFAULTS.x + cellWidth * i, cellWidth + DEFAULTS.y + randBottom);
         }
         if (filled.indexOf(i) > -1) {
-            ctx.rect(DEFAULTS.x+cellWidth*i, DEFAULTS.y, cellWidth, cellWidth, {stroke:"none", fill: color, fillStyle: style})
+            ctx.rect(DEFAULTS.x + cellWidth * i, DEFAULTS.y, cellWidth, cellWidth, {
+              stroke: "none",
+              fillStyle: style
+            })
         }
         ctx.text(
           DEFAULTS.x + cellWidth * i + cellWidth / 2,
